@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StatCompass – Statistical Test Decision Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="StatCompass is an interactive checklist that guides students to appropriate statistical tests based on their study design and data."
+  />
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0b1220;
+      --card: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --accent-strong: #0ea5e9;
+      --accent-warn: #f97316;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+      --border: rgba(148, 163, 184, 0.35);
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.7);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --transition-fast: 180ms ease-out;
+      --transition-normal: 250ms ease;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .page-shell {
+      width: 100%;
+      max-width: 1080px;
+      backdrop-filter: blur(26px);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.16), transparent 52%),
+        radial-gradient(circle at 100% 0, rgba(129, 140, 248, 0.15), transparent 55%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.96));
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      padding: 24px 26px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 0, rgba(56, 189, 248, 0.16), transparent 55%),
+        radial-gradient(circle at 90% 10%, rgba(244, 114, 182, 0.15), transparent 55%);
+      opacity: 0.22;
+      pointer-events: none;
+    }
+
+    .page-shell-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .brand-logo-wrap {
+      position: relative;
+      flex-shrink: 0;
+      width: 162px;
+      height: 162px;
+      border-radius: 54px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at 30% 0, rgba(56, 189, 248, 0.35), transparent 55%),
+        radial-gradient(circle at 70% 100%, rgba(59, 130, 246, 0.35), transparent 55%),
+        #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.75);
+    }
+
+    .brand-logo-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0, rgba(248, 250, 252, 0.3), transparent 55%);
+      opacity: 0.9;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    .brand-logo {
+      width: 90%;
+      height: 90%;
+      object-fit: contain;
+      border-radius: 48px;
+    }
+
+    .brand-text-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-title {
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title span.primary {
+      background: linear-gradient(120deg, #38bdf8, #a855f7, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 0.86rem;
+      color: var(--muted);
+      max-width: 480px;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.16), transparent 55%),
+        rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #22c55e, #16a34a);
+      box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.4);
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 180px;
+      flex-shrink: 0;
+    }
+
+    .step-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.84rem;
+      padding: 5px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--muted);
+    }
+
+    .step-pill-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #38bdf8, #0f766e);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b1120;
+      font-size: 0.7rem;
+      font-weight: 700;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+    }
+
+    .progress-bar-shell {
+      width: 100%;
+      max-width: 220px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 14%;
+      max-width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+      transition: width var(--transition-normal);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.4fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 880px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .header-right {
+        align-items: flex-start;
+      }
+    }
+
+    .card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.15), transparent 60%),
+        radial-gradient(circle at 100% 0, rgba(59, 130, 246, 0.15), transparent 60%),
+        rgba(15, 23, 42, 0.98);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.85);
+      padding: 18px 18px 16px;
+      overflow: hidden;
+    }
+
+    .card > #question-container,
+    .card > .card-footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .question-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .question-body {
+      margin-top: 2px;
+      margin-bottom: 14px;
+    }
+
+    .question-text {
+      font-size: 1.03rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .question-help {
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .option-btn {
+      position: relative;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.52);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.12), transparent 60%),
+        rgba(15, 23, 42, 0.96);
+      color: var(--text);
+      text-align: left;
+      padding: 10px 62px 10px 11px;
+      cursor: pointer;
+      font: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast);
+    }
+
+    .option-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.8);
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.2), transparent 60%),
+        rgba(15, 23, 42, 0.98);
+    }
+
+    .option-btn-main {
+      font-size: 0.92rem;
+      font-weight: 500;
+      min-width: 0;
+      padding-right: 0.5rem;
+    }
+
+    .option-btn-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .option-pill {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.5);
+      font-size: 0.8rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .nav-buttons {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font: inherit;
+      font-size: 0.8rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 6px 11px;
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
+    }
+
+    .btn span.icon {
+      font-size: 0.8rem;
+    }
+
+    .btn:hover {
+      background: rgba(15, 23, 42, 1);
+      color: var(--text);
+      border-color: rgba(56, 189, 248, 0.8);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, #38bdf8, #22c55e);
+      color: #020617;
+      border-color: transparent;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.45);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(120deg, #7dd3fc, #4ade80);
+      box-shadow: 0 14px 30px rgba(34, 197, 94, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-ghost-danger {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+    }
+
+    .btn-ghost-danger:hover {
+      background: rgba(127, 29, 29, 0.4);
+    }
+
+    .sidebar {
+      position: relative;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at 0 0, rgba(52, 211, 153, 0.12), transparent 60%),
+        radial-gradient(circle at 100% 0, rgba(248, 113, 113, 0.14), transparent 65%),
+        rgba(15, 23, 42, 0.98);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.85);
+      padding: 14px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .sparkle {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #facc15, #f97316);
+      box-shadow: 0 0 14px rgba(234, 179, 8, 0.8);
+    }
+
+    .sidebar-block {
+      border-radius: 12px;
+      padding: 8px 9px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-block + .sidebar-block {
+      margin-top: 4px;
+    }
+
+    .sidebar-block strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .sidebar-list {
+      margin-top: 5px;
+      padding-left: 16px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .sidebar-list li {
+      color: var(--muted);
+    }
+
+    .sidebar-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tag-chip {
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 1);
+      color: var(--muted);
+    }
+
+    .result-chip {
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(56, 189, 248, 0.7);
+      background: rgba(15, 23, 42, 1);
+      color: #bae6fd;
+      white-space: nowrap;
+      min-width: 3.25em;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .results-list {
+      margin-top: 8px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .result-item {
+      border-radius: 10px;
+      padding: 7px 9px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .result-name-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 2px;
+      font-size: 0.83rem;
+    }
+
+    .result-name-row > div:first-child {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .result-rank-pill {
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(34, 197, 94, 0.85);
+      color: #bbf7d0;
+      background: rgba(22, 101, 52, 0.6);
+      white-space: nowrap;
+      min-width: 3.25em;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .result-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    /* Animations */
+
+    .fade-in-up {
+      animation: fadeInUp 240ms ease-out forwards;
+    }
+
+    .fade-out-down {
+      animation: fadeOutDown 180ms ease-in forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOutDown {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(5px) scale(0.99);
+      }
+    }
+
+    .glow-orbit {
+      position: absolute;
+      inset: -40%;
+      border-radius: 50%;
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orbit.orbit-1 {
+      transform: rotate(18deg);
+    }
+
+    .glow-orbit.orbit-2 {
+      transform: rotate(-22deg);
+      border-color: rgba(129, 140, 248, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-shell">
+    <div class="page-shell-inner">
+      <header>
+        <div class="brand">
+          <div class="brand-logo-wrap">
+            <!-- Logo image from your file -->
+            <img
+              src="StatCompass - Logo.png"
+              alt="StatCompass logo"
+              class="brand-logo"
+            />
+          </div>
+          <div class="brand-text-main">
+            <div class="brand-title">
+              <span class="primary">StatCompass</span>
+              <span style="font-size:0.75rem;color:#9ca3af;">Checklist</span>
+            </div>
+            <div class="brand-subtitle">
+              Guided visual checklist that narrows down appropriate statistical
+              tests based on your variables and study design.
+            </div>
+            <div class="badge-row">
+              <div class="pill">
+                <span class="pill-dot"></span>
+                Built for BME / Biostatistics students
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="step-indicator">
+            <span class="step-pill-icon" id="step-pill-number">1</span>
+            <span id="step-pill-label">Question 1 · Start</span>
+          </div>
+          <div class="progress-bar-shell">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <!-- Main interactive card -->
+        <section class="card">
+          <div class="glow-orbit orbit-1"></div>
+          <div class="glow-orbit orbit-2"></div>
+
+          <div id="question-container"></div>
+
+          <div class="card-footer">
+            <div>
+              <span id="path-summary">Getting started…</span>
+            </div>
+            <div class="nav-buttons">
+              <button class="btn btn-ghost" id="back-btn" type="button">
+                <span class="icon">←</span> Back
+              </button>
+              <button class="btn btn-primary" id="restart-btn" type="button">
+                <span class="icon">⟳</span> Start over
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sidebar: explanations & current suggestion -->
+        <aside class="sidebar">
+          <div>
+            <div class="sidebar-section-title">
+              <div class="sparkle"></div>
+              Decision summary
+            </div>
+            <div class="sidebar-block" id="sidebar-path-block">
+              <strong>Current path</strong>
+              <ul class="sidebar-list" id="path-list"></ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="sidebar-section-title">
+              <span style="width:18px;height:18px;border-radius:999px;border:1px solid rgba(148,163,184,0.9);display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;">i</span>
+              StatCompass tips
+            </div>
+            <div class="sidebar-block">
+              <strong>Remember the big ideas</strong>
+              <ul class="sidebar-list">
+                <li>
+                  Choose tests based on your <em>research question</em>,
+                  <em>variable types</em>, and <em>study design</em>
+                  (independent vs paired, number of groups).
+                </li>
+                <li>
+                  Check assumptions (e.g. normality, equal variances,
+                  independent observations).
+                </li>
+                <li>
+                  If multiple tests are appropriate, start with the
+                  most powerful test whose assumptions you can justify.
+                </li>
+              </ul>
+              <div class="sidebar-badge-row">
+                <span class="tag-chip">Not a substitute for a statistician</span>
+                <span class="tag-chip">For teaching & revision</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sidebar-section-title">
+              <span style="width:18px;height:18px;border-radius:999px;background:radial-gradient(circle at 30% 0,#22c55e,#16a34a);box-shadow:0 0 14px rgba(34,197,94,0.7);"></span>
+              Suggested tests
+            </div>
+            <div class="sidebar-block" id="results-block">
+              <strong id="results-title">Answer questions to see suggestions</strong>
+              <div class="results-list" id="results-list"></div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <footer>
+        <span>
+          StatCompass is an instructional guide and does not replace formal
+          statistical consultation.
+        </span>
+        <span>© <span id="year"></span> StatCompass</span>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // NOTE:
+    // Because this environment cannot read your Word (.docx) file directly,
+    // the decision flow below is a generic biostatistics checklist template.
+    // You can customize the "decisionTree" object to match your exact course checklist.
+
+    const decisionTree = {
+      start: {
+        id: "start",
+        kind: "question",
+        tag: "Orientation",
+        title: "What are you mainly trying to do?",
+        text: "Think about your primary research question.",
+        help: "Are you comparing groups, describing distributions, looking for associations, or building a prediction model?",
+        options: [
+          {
+            id: "compare-groups",
+            label: "Compare groups",
+            sub: "E.g. treatment vs control, multiple experimental groups",
+            next: "q_outcome_type_groups",
+          },
+          {
+            id: "relationship",
+            label: "Association / relationship between variables",
+            sub: "E.g. correlation between two measures",
+            next: "q_relationship_type",
+          },
+          {
+            id: "describe",
+            label: "Describe a single variable",
+            sub: "Summarize without comparing groups",
+            next: "r_descriptive",
+          },
+          {
+            id: "predict",
+            label: "Prediction / regression model",
+            sub: "Outcome explained by one or more predictors",
+            next: "q_outcome_type_regression",
+          },
+        ],
+      },
+
+      /* COMPARE GROUPS BRANCH */
+
+      q_outcome_type_groups: {
+        id: "q_outcome_type_groups",
+        kind: "question",
+        tag: "Variable type",
+        title: "What type is your main outcome (dependent) variable?",
+        text: "Outcome = the variable you are comparing between groups.",
+        help: "Categorical = yes/no, pass/fail, stages. Quantitative = numeric (e.g. blood pressure, scores).",
+        options: [
+          {
+            id: "out-cat-g",
+            label: "Categorical outcome",
+            sub: "E.g. yes/no, success/failure, stage I–IV",
+            next: "q_groups_cat",
+          },
+          {
+            id: "out-quant-g",
+            label: "Quantitative outcome",
+            sub: "E.g. blood pressure, BMI, scores",
+            next: "q_groups_quant_numgroups",
+          },
+        ],
+      },
+
+      /* CATEGORICAL OUTCOME – GROUPS */
+
+      q_groups_cat: {
+        id: "q_groups_cat",
+        kind: "question",
+        tag: "Design",
+        title: "How many groups are you comparing?",
+        text: "Consider how many distinct groups or conditions you have.",
+        help: "Examples: 2 groups = treatment vs control; >2 groups = multiple dose levels.",
+        options: [
+          {
+            id: "cat-one-sample",
+            label: "One sample / one group",
+            sub: "Compare a proportion in one group to a known value",
+            next: "q_cat_one_sample_size",
+          },
+          {
+            id: "cat-two-groups",
+            label: "Two independent groups",
+            sub: "E.g. treatment vs control",
+            next: "q_cat_two_ind_sample_size",
+          },
+          {
+            id: "cat-more-groups",
+            label: "More than two independent groups",
+            sub: "E.g. three or more treatment arms",
+            next: "r_cat_more_groups",
+          },
+          {
+            id: "cat-paired",
+            label: "Paired / matched / repeated on same subjects",
+            sub: "E.g. before vs after in same individuals",
+            next: "r_cat_paired",
+          },
+        ],
+      },
+
+      q_cat_one_sample_size: {
+        id: "q_cat_one_sample_size",
+        kind: "question",
+        tag: "Sample size",
+        title: "Is your sample size small?",
+        text: "Rough rule: 'small' if n is small or the expected number of events is <5.",
+        help: "If unsure, choose “Not especially small” to see the large-sample test.",
+        options: [
+          {
+            id: "cat-one-small",
+            label: "Yes, sample is small",
+            sub: "Or expected counts are very low",
+            next: "r_cat_one_small",
+          },
+          {
+            id: "cat-one-large",
+            label: "No, not especially small",
+            sub: "Expected counts are reasonably large",
+            next: "r_cat_one_large",
+          },
+        ],
+      },
+
+      q_cat_two_ind_sample_size: {
+        id: "q_cat_two_ind_sample_size",
+        kind: "question",
+        tag: "Sample size",
+        title: "Are all expected cell counts ≥ 5?",
+        text: "Think about the 2 × 2 table of group × outcome.",
+        help: "If some expected counts are <5, Fisher’s exact test is safer.",
+        options: [
+          {
+            id: "cat-two-small",
+            label: "No / some cells are very small",
+            sub: "Use exact methods",
+            next: "r_cat_two_small",
+          },
+          {
+            id: "cat-two-ok",
+            label: "Yes / all expected counts ≳ 5",
+            sub: "Standard large-sample methods are OK",
+            next: "r_cat_two_large",
+          },
+        ],
+      },
+
+      /* QUANTITATIVE OUTCOME – GROUPS */
+
+      q_groups_quant_numgroups: {
+        id: "q_groups_quant_numgroups",
+        kind: "question",
+        tag: "Design",
+        title: "How many groups or time points are you comparing?",
+        text: "Count distinct groups or repeated measurements.",
+        help: "Paired = the same subject measured multiple times or matched pairs.",
+        options: [
+          {
+            id: "quant-one-group",
+            label: "One group / one sample",
+            sub: "Compare mean to a known value",
+            next: "q_quant_one_normal",
+          },
+          {
+            id: "quant-two-groups",
+            label: "Two groups",
+            sub: "Either independent or paired",
+            next: "q_quant_two_paired",
+          },
+          {
+            id: "quant-more-groups",
+            label: "More than two groups/time points",
+            sub: "At least 3 groups or repeated measurements",
+            next: "q_quant_more_paired",
+          },
+        ],
+      },
+
+      q_quant_one_normal: {
+        id: "q_quant_one_normal",
+        kind: "question",
+        tag: "Assumptions",
+        title: "Is the outcome approximately normally distributed?",
+        text: "Look at histograms, Q–Q plots, or prior knowledge.",
+        help: "If the distribution is strongly skewed or you have important outliers, prefer a nonparametric test.",
+        options: [
+          {
+            id: "quant-one-normal-yes",
+            label: "Yes / approximately normal",
+            sub: "And no extreme outliers",
+            next: "r_quant_one_normal",
+          },
+          {
+            id: "quant-one-normal-no",
+            label: "No / clearly non-normal or heavy outliers",
+            sub: "Or sample size is small",
+            next: "r_quant_one_nonparam",
+          },
+        ],
+      },
+
+      q_quant_two_paired: {
+        id: "q_quant_two_paired",
+        kind: "question",
+        tag: "Design",
+        title: "Are the two measurements paired/matched?",
+        text: "Paired = same subject measured twice, or matched pairs.",
+        help: "Independent = different subjects in each group.",
+        options: [
+          {
+            id: "quant-two-paired",
+            label: "Paired / repeated on same subject",
+            sub: "E.g. before vs after",
+            next: "q_quant_two_paired_normal",
+          },
+          {
+            id: "quant-two-ind",
+            label: "Independent groups",
+            sub: "Different subjects in each group",
+            next: "q_quant_two_ind_normal",
+          },
+        ],
+      },
+
+      q_quant_two_paired_normal: {
+        id: "q_quant_two_paired_normal",
+        kind: "question",
+        tag: "Assumptions",
+        title: "Are differences approximately normal?",
+        text: "For paired data, normality refers to the distribution of within-pair differences.",
+        help: "If differences are non-normal and n is small, consider nonparametric tests.",
+        options: [
+          {
+            id: "quant-two-paired-normal-yes",
+            label: "Yes / approximately normal",
+            sub: "No major outliers in differences",
+            next: "r_quant_two_paired_normal",
+          },
+          {
+            id: "quant-two-paired-normal-no",
+            label: "No / clearly non-normal",
+            sub: "Or important outliers",
+            next: "r_quant_two_paired_nonparam",
+          },
+        ],
+      },
+
+      q_quant_two_ind_normal: {
+        id: "q_quant_two_ind_normal",
+        kind: "question",
+        tag: "Assumptions",
+        title: "Are both groups approximately normal with similar variances?",
+        text: "Check histograms and spread; similar SDs suggest similar variances.",
+        help: "If variances are unequal, you can still use a Welch t-test, or move to a nonparametric test.",
+        options: [
+          {
+            id: "quant-two-ind-normal-yes",
+            label: "Yes / approximately normal with similar spreads",
+            sub: "Use standard or Welch t-test",
+            next: "r_quant_two_ind_normal",
+          },
+          {
+            id: "quant-two-ind-normal-no",
+            label: "No / clearly non-normal or very unequal variances",
+            sub: "Or many outliers",
+            next: "r_quant_two_ind_nonparam",
+          },
+        ],
+      },
+
+      q_quant_more_paired: {
+        id: "q_quant_more_paired",
+        kind: "question",
+        tag: "Design",
+        title: "Are measurements repeated on the same subjects?",
+        text: "Or do you have independent groups?",
+        help: "Repeated measures include time series on the same individuals.",
+        options: [
+          {
+            id: "quant-more-repeated",
+            label: "Repeated measures / matched",
+            sub: "Same subjects measured at ≥3 times/conditions",
+            next: "r_quant_more_repeated",
+          },
+          {
+            id: "quant-more-ind",
+            label: "Independent groups",
+            sub: "Different subjects in each group",
+            next: "r_quant_more_ind",
+          },
+        ],
+      },
+
+      /* RELATIONSHIP / CORRELATION BRANCH */
+
+      q_relationship_type: {
+        id: "q_relationship_type",
+        kind: "question",
+        tag: "Variable types",
+        title: "What types of variables are you relating?",
+        text: "Think about both variables involved in the association.",
+        help: "Outcome vs predictor is less important here than whether they are quantitative or categorical.",
+        options: [
+          {
+            id: "rel-both-quant",
+            label: "Both variables are quantitative",
+            sub: "E.g. height vs weight",
+            next: "q_rel_quant_assumptions",
+          },
+          {
+            id: "rel-both-cat",
+            label: "Both variables are categorical",
+            sub: "E.g. sex vs disease status",
+            next: "r_rel_both_cat",
+          },
+          {
+            id: "rel-mix",
+            label: "One quantitative, one categorical",
+            sub: "E.g. BMI vs smoking status",
+            next: "q_outcome_type_groups",
+          },
+        ],
+      },
+
+      q_rel_quant_assumptions: {
+        id: "q_rel_quant_assumptions",
+        kind: "question",
+        tag: "Assumptions",
+        title: "Is the relationship roughly linear with no extreme outliers?",
+        text: "Linear correlation/regression assume a linear trend and reasonably constant spread.",
+        help: "If the relationship is monotonic but not linear, or you have outliers, rank-based correlation is safer.",
+        options: [
+          {
+            id: "rel-quant-linear",
+            label: "Yes / approximately linear with mild outliers at most",
+            sub: "Pearson correlation is usually appropriate",
+            next: "r_rel_quant_linear",
+          },
+          {
+            id: "rel-quant-nonlinear",
+            label: "No / non-linear or with important outliers",
+            sub: "Spearman or other methods",
+            next: "r_rel_quant_nonparam",
+          },
+        ],
+      },
+
+      /* REGRESSION / PREDICTION BRANCH */
+
+      q_outcome_type_regression: {
+        id: "q_outcome_type_regression",
+        kind: "question",
+        tag: "Outcome type",
+        title: "What is the type of the outcome you want to predict?",
+        text: "Outcome = dependent variable in your model.",
+        help: "This determines the family of regression model.",
+        options: [
+          {
+            id: "reg-out-quant",
+            label: "Quantitative outcome",
+            sub: "E.g. blood pressure, score, time",
+            next: "r_reg_quant",
+          },
+          {
+            id: "reg-out-binary",
+            label: "Binary categorical outcome",
+            sub: "E.g. event yes/no, diseased/healthy",
+            next: "r_reg_binary",
+          },
+          {
+            id: "reg-out-ordinal",
+            label: "Ordinal categorical outcome",
+            sub: "E.g. ordered severity levels",
+            next: "r_reg_ordinal",
+          },
+          {
+            id: "reg-out-count",
+            label: "Count outcome",
+            sub: "E.g. number of events",
+            next: "r_reg_count",
+          },
+        ],
+      },
+
+      /* DESCRIPTIVE BRANCH RESULT */
+
+      r_descriptive: {
+        id: "r_descriptive",
+        kind: "result",
+        tag: "Descriptive",
+        title: "Descriptive statistics and visualization",
+        text: "If you are not formally comparing groups, focus on descriptive summaries.",
+        help: "You can still use confidence intervals to describe precision.",
+        tests: [
+          {
+            name: "Descriptive statistics (mean, SD, median, IQR, proportions)",
+            rank: 1,
+            desc: "Report appropriate summaries depending on variable type. Use median/IQR for skewed quantitative data.",
+          },
+          {
+            name: "Visualization (histograms, boxplots, bar charts)",
+            rank: 2,
+            desc: "Use graphics to communicate distributions and patterns.",
+          },
+          {
+            name: "Confidence intervals",
+            rank: 3,
+            desc: "For key parameters (means, proportions), provide 95% CIs to express uncertainty.",
+          },
+        ],
+      },
+
+      /* RESULT NODES – CATEGORICAL OUTCOME */
+
+      r_cat_one_small: {
+        id: "r_cat_one_small",
+        kind: "result",
+        tag: "Categorical · One sample",
+        title: "Small-sample test for one proportion",
+        text: "When sample size or expected counts are small, use exact methods.",
+        help: "",
+        tests: [
+          {
+            name: "Exact binomial test",
+            rank: 1,
+            desc: "Tests whether a single proportion equals a specified value using the exact binomial distribution.",
+          },
+          {
+            name: "Clopper–Pearson confidence interval",
+            rank: 2,
+            desc: "Provides an exact confidence interval for the true proportion.",
+          },
+        ],
+      },
+
+      r_cat_one_large: {
+        id: "r_cat_one_large",
+        kind: "result",
+        tag: "Categorical · One sample",
+        title: "Large-sample test for one proportion",
+        text: "With reasonable sample size and expected counts, normal approximations are appropriate.",
+        help: "",
+        tests: [
+          {
+            name: "One-sample z-test for proportion",
+            rank: 1,
+            desc: "Compares an observed proportion to a specified value using a large-sample z-statistic.",
+          },
+          {
+            name: "Wald / Wilson confidence interval for a proportion",
+            rank: 2,
+            desc: "Provides an approximate interval estimate for the true proportion.",
+          },
+        ],
+      },
+
+      r_cat_two_small: {
+        id: "r_cat_two_small",
+        kind: "result",
+        tag: "Categorical · 2 groups",
+        title: "Two-group comparison with small cell counts",
+        text: "When any expected cell count is small, use exact tests.",
+        help: "",
+        tests: [
+          {
+            name: "Fisher’s exact test",
+            rank: 1,
+            desc: "Tests independence between two categorical variables in a 2×2 table without relying on large-sample approximations.",
+          },
+          {
+            name: "Exact confidence interval for risk difference or odds ratio",
+            rank: 2,
+            desc: "Provides interval estimates of effect measures that respect the discreteness of the data.",
+          },
+        ],
+      },
+
+      r_cat_two_large: {
+        id: "r_cat_two_large",
+        kind: "result",
+        tag: "Categorical · 2 groups",
+        title: "Two-group comparison with adequate cell counts",
+        text: "With adequate expected counts, chi-square methods are appropriate.",
+        help: "",
+        tests: [
+          {
+            name: "Chi-square test of independence (2×2)",
+            rank: 1,
+            desc: "Tests whether the proportion differs between two independent groups.",
+          },
+          {
+            name: "Z-test for difference in proportions",
+            rank: 2,
+            desc: "Directly tests equality of two proportions using a large-sample z-statistic.",
+          },
+          {
+            name: "Confidence interval for risk difference / relative risk / odds ratio",
+            rank: 3,
+            desc: "Quantifies the size and direction of the association between group and outcome.",
+          },
+        ],
+      },
+
+      r_cat_more_groups: {
+        id: "r_cat_more_groups",
+        kind: "result",
+        tag: "Categorical · >2 groups",
+        title: "Multiple-group comparison of proportions",
+        text: "For a categorical outcome across ≥3 independent groups, use chi-square-type tests.",
+        help: "",
+        tests: [
+          {
+            name: "Chi-square test of independence",
+            rank: 1,
+            desc: "Tests whether the distribution of the categorical outcome differs across groups.",
+          },
+          {
+            name: "Post-hoc pairwise comparisons of proportions (with multiplicity control)",
+            rank: 2,
+            desc: "If the global test is significant, compare specific pairs of groups with adjusted p-values.",
+          },
+        ],
+      },
+
+      r_cat_paired: {
+        id: "r_cat_paired",
+        kind: "result",
+        tag: "Categorical · Paired",
+        title: "Paired categorical comparison",
+        text: "For binary outcomes measured twice on the same subjects, use tests for paired data.",
+        help: "",
+        tests: [
+          {
+            name: "McNemar’s test",
+            rank: 1,
+            desc: "Compares paired binary outcomes (e.g. pre/post) focusing on discordant pairs.",
+          },
+          {
+            name: "Cochran’s Q test (for ≥3 time points, binary)",
+            rank: 2,
+            desc: "Extension of McNemar’s test to more than two repeated binary measurements.",
+          },
+        ],
+      },
+
+      /* RESULT NODES – QUANTITATIVE OUTCOME */
+
+      r_quant_one_normal: {
+        id: "r_quant_one_normal",
+        kind: "result",
+        tag: "Quantitative · One sample",
+        title: "One-sample comparison of mean",
+        text: "With approximate normality, use parametric methods.",
+        help: "",
+        tests: [
+          {
+            name: "One-sample t-test",
+            rank: 1,
+            desc: "Tests whether the population mean equals a specified value.",
+          },
+          {
+            name: "t-based confidence interval for the mean",
+            rank: 2,
+            desc: "Provides an interval estimate for the population mean.",
+          },
+        ],
+      },
+
+      r_quant_one_nonparam: {
+        id: "r_quant_one_nonparam",
+        kind: "result",
+        tag: "Quantitative · One sample",
+        title: "One-sample comparison with non-normal data",
+        text: "For skewed distributions or important outliers, use robust or rank-based methods.",
+        help: "",
+        tests: [
+          {
+            name: "Wilcoxon signed-rank test (one-sample)",
+            rank: 1,
+            desc: "Tests whether the median differs from a specified value.",
+          },
+          {
+            name: "Bootstrap confidence interval for the mean/median",
+            rank: 2,
+            desc: "Simulation-based intervals that are less sensitive to non-normality.",
+          },
+        ],
+      },
+
+      r_quant_two_paired_normal: {
+        id: "r_quant_two_paired_normal",
+        kind: "result",
+        tag: "Quantitative · Paired",
+        title: "Two paired quantitative measurements (normal differences)",
+        text: "Use parametric paired methods when differences are roughly normal.",
+        help: "",
+        tests: [
+          {
+            name: "Paired t-test",
+            rank: 1,
+            desc: "Tests whether the mean difference between paired measurements is zero.",
+          },
+          {
+            name: "t-based confidence interval for the mean difference",
+            rank: 2,
+            desc: "Quantifies the average change between paired measurements.",
+          },
+        ],
+      },
+
+      r_quant_two_paired_nonparam: {
+        id: "r_quant_two_paired_nonparam",
+        kind: "result",
+        tag: "Quantitative · Paired",
+        title: "Two paired quantitative measurements (non-normal differences)",
+        text: "For non-normal differences or important outliers, use rank-based methods.",
+        help: "",
+        tests: [
+          {
+            name: "Wilcoxon signed-rank test (paired)",
+            rank: 1,
+            desc: "Tests whether the median difference between paired measurements is zero.",
+          },
+          {
+            name: "Sign test",
+            rank: 2,
+            desc: "A simpler, very robust alternative when only the direction of change is reliable.",
+          },
+        ],
+      },
+
+      r_quant_two_ind_normal: {
+        id: "r_quant_two_ind_normal",
+        kind: "result",
+        tag: "Quantitative · 2 groups",
+        title: "Two independent groups (normal, similar variances)",
+        text: "Standard parametric two-sample methods are appropriate.",
+        help: "",
+        tests: [
+          {
+            name: "Two-sample t-test (Student or Welch)",
+            rank: 1,
+            desc: "Tests whether the mean differs between two independent groups. Welch’s version is safer when variances differ.",
+          },
+          {
+            name: "t-based confidence interval for mean difference",
+            rank: 2,
+            desc: "Estimates the size of the mean difference with uncertainty.",
+          },
+        ],
+      },
+
+      r_quant_two_ind_nonparam: {
+        id: "r_quant_two_ind_nonparam",
+        kind: "result",
+        tag: "Quantitative · 2 groups",
+        title: "Two independent groups (non-normal or unequal variances)",
+        text: "Rank-based tests avoid normality assumptions and are robust to outliers.",
+        help: "",
+        tests: [
+          {
+            name: "Mann–Whitney U test (Wilcoxon rank-sum)",
+            rank: 1,
+            desc: "Compares the distribution (often interpreted as medians) of two independent groups.",
+          },
+          {
+            name: "Permutation test for mean or median",
+            rank: 2,
+            desc: "Resampling-based test that does not require distributional assumptions.",
+          },
+        ],
+      },
+
+      r_quant_more_ind: {
+        id: "r_quant_more_ind",
+        kind: "result",
+        tag: "Quantitative · >2 groups",
+        title: "Independent groups with quantitative outcome",
+        text: "For ≥3 groups, start with a global test before pairwise comparisons.",
+        help: "",
+        tests: [
+          {
+            name: "One-way ANOVA",
+            rank: 1,
+            desc: "Tests whether at least one group mean differs from the others, assuming approximate normality and similar variances.",
+          },
+          {
+            name: "Post-hoc pairwise t-tests with multiplicity adjustment",
+            rank: 2,
+            desc: "If ANOVA is significant, explore which specific group means differ.",
+          },
+          {
+            name: "Kruskal–Wallis test",
+            rank: 3,
+            desc: "Nonparametric alternative when normality/variance assumptions are violated.",
+          },
+        ],
+      },
+
+      r_quant_more_repeated: {
+        id: "r_quant_more_repeated",
+        kind: "result",
+        tag: "Quantitative · Repeated",
+        title: "Repeated measures quantitative outcome",
+        text: "When the same subjects are measured at ≥3 times or conditions, use repeated-measures methods.",
+        help: "",
+        tests: [
+          {
+            name: "Repeated-measures ANOVA / linear mixed model",
+            rank: 1,
+            desc: "Models within-subject correlations across time/conditions.",
+          },
+          {
+            name: "Friedman test",
+            rank: 2,
+            desc: "Nonparametric test for ≥3 repeated quantitative measurements.",
+          },
+        ],
+      },
+
+      /* RESULT NODES – RELATIONSHIP */
+
+      r_rel_both_cat: {
+        id: "r_rel_both_cat",
+        kind: "result",
+        tag: "Association · Categorical",
+        title: "Association between two categorical variables",
+        text: "You can treat this as a contingency-table problem.",
+        help: "",
+        tests: [
+          {
+            name: "Chi-square test of independence",
+            rank: 1,
+            desc: "Tests whether there is an association between two categorical variables in a contingency table.",
+          },
+          {
+            name: "Fisher’s exact test (if small cells)",
+            rank: 2,
+            desc: "Use when some expected counts are small, especially for 2×2 tables.",
+          },
+        ],
+      },
+
+      r_rel_quant_linear: {
+        id: "r_rel_quant_linear",
+        kind: "result",
+        tag: "Association · Quantitative",
+        title: "Linear association between two quantitative variables",
+        text: "When the relationship is roughly linear and assumptions hold, use Pearson methods.",
+        help: "",
+        tests: [
+          {
+            name: "Pearson correlation",
+            rank: 1,
+            desc: "Quantifies the strength of linear association between two quantitative variables.",
+          },
+          {
+            name: "Simple linear regression",
+            rank: 2,
+            desc: "Models the expected value of one variable as a linear function of the other.",
+          },
+        ],
+      },
+
+      r_rel_quant_nonparam: {
+        id: "r_rel_quant_nonparam",
+        kind: "result",
+        tag: "Association · Quantitative",
+        title: "Monotonic / non-linear association or outliers",
+        text: "If the relationship is monotonic but not linear, or you have outliers, use rank-based methods.",
+        help: "",
+        tests: [
+          {
+            name: "Spearman rank correlation",
+            rank: 1,
+            desc: "Measures strength of monotonic association without assuming linearity or normality.",
+          },
+          {
+            name: "Kendall’s tau",
+            rank: 2,
+            desc: "Another robust measure of monotonic association, less sensitive to outliers.",
+          },
+        ],
+      },
+
+      /* RESULT NODES – REGRESSION */
+
+      r_reg_quant: {
+        id: "r_reg_quant",
+        kind: "result",
+        tag: "Regression · Quantitative outcome",
+        title: "Regression for quantitative outcomes",
+        text: "Use linear models when assumptions are approximately satisfied.",
+        help: "",
+        tests: [
+          {
+            name: "Multiple linear regression",
+            rank: 1,
+            desc: "Models a quantitative outcome using one or more predictors, assuming linearity, homoscedasticity, and approximate normality of residuals.",
+          },
+          {
+            name: "Mixed-effects models (if clustered/repeated)",
+            rank: 2,
+            desc: "Extend linear regression when data are clustered (e.g. repeated measures, centers).",
+          },
+        ],
+      },
+
+      r_reg_binary: {
+        id: "r_reg_binary",
+        kind: "result",
+        tag: "Regression · Binary outcome",
+        title: "Regression for binary outcomes",
+        text: "For yes/no or event outcomes, logistic-type models are usually appropriate.",
+        help: "",
+        tests: [
+          {
+            name: "Binary logistic regression",
+            rank: 1,
+            desc: "Models log-odds of a binary outcome as a function of predictors.",
+          },
+          {
+            name: "Mixed-effects logistic regression",
+            rank: 2,
+            desc: "Use for clustered or repeated-measures binary data.",
+          },
+        ],
+      },
+
+      r_reg_ordinal: {
+        id: "r_reg_ordinal",
+        kind: "result",
+        tag: "Regression · Ordinal outcome",
+        title: "Regression for ordinal categorical outcomes",
+        text: "When categories have a natural ordering, use ordinal regression.",
+        help: "",
+        tests: [
+          {
+            name: "Proportional-odds ordinal logistic regression",
+            rank: 1,
+            desc: "Models log-odds of being at or below each category level.",
+          },
+        ],
+      },
+
+      r_reg_count: {
+        id: "r_reg_count",
+        kind: "result",
+        tag: "Regression · Count outcome",
+        title: "Regression for count outcomes",
+        text: "For event counts, Poisson-type models are suitable, with adjustments for overdispersion.",
+        help: "",
+        tests: [
+          {
+            name: "Poisson regression",
+            rank: 1,
+            desc: "Models counts as a function of predictors, often with an offset for exposure time.",
+          },
+          {
+            name: "Negative binomial regression",
+            rank: 2,
+            desc: "Use when there is overdispersion relative to the Poisson model.",
+          },
+        ],
+      },
+    };
+
+    const history = [];
+    let currentNodeId = "start";
+
+    const questionContainer = document.getElementById("question-container");
+    const pathSummary = document.getElementById("path-summary");
+    const pathList = document.getElementById("path-list");
+    const resultsTitle = document.getElementById("results-title");
+    const resultsList = document.getElementById("results-list");
+    const backBtn = document.getElementById("back-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const progressBar = document.getElementById("progress-bar");
+    const stepPillNumber = document.getElementById("step-pill-number");
+    const stepPillLabel = document.getElementById("step-pill-label");
+
+    function getNode(id) {
+      return decisionTree[id];
+    }
+
+    function computeProgress() {
+      const maxDepthHint = 8; // heuristic; we just show relative progress
+      const progress = Math.min(
+        100,
+        Math.max(10, ((history.length + 1) / maxDepthHint) * 100)
+      );
+      return progress;
+    }
+
+    function updateHeaderForNode(node) {
+      const stepNumber = history.length + 1;
+      stepPillNumber.textContent = stepNumber.toString();
+
+      if (node.kind === "question") {
+        stepPillLabel.textContent = `Question ${stepNumber} · ${node.tag || "Checklist"}`;
+      } else {
+        stepPillLabel.textContent = `Suggestion · ${node.tag || "Result"}`;
+      }
+
+      progressBar.style.width = computeProgress() + "%";
+    }
+
+    function renderNode(id, fromNav = false) {
+      const node = getNode(id);
+      if (!node) return;
+
+      currentNodeId = id;
+
+      // Animate out old content if not initial render
+      if (!fromNav && questionContainer.firstChild) {
+        questionContainer.firstChild.classList.add("fade-out-down");
+      }
+
+      const fragment = document.createElement("div");
+      fragment.className = "fade-in-up";
+
+      if (node.kind === "question") {
+        fragment.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">
+              ${node.title}
+            </div>
+            <span class="card-tag">${node.tag || "Question"}</span>
+          </div>
+          <div class="question-meta">
+            <span>Answer to narrow down candidate tests.</span>
+          </div>
+          <div class="question-body">
+            <div class="question-text">${node.text}</div>
+            ${
+              node.help
+                ? `<div class="question-help">${node.help}</div>`
+                : ""
+            }
+          </div>
+          <div class="options-grid">
+            ${node.options
+              .map(
+                (opt, idx) => `
+              <button class="option-btn" data-next="${opt.next}" data-label="${opt.label}">
+                <div class="option-btn-main">${opt.label}</div>
+                ${
+                  opt.sub
+                    ? `<div class="option-btn-sub">${opt.sub}</div>`
+                    : ""
+                }
+                <div class="option-pill">Option ${idx + 1}</div>
+              </button>
+            `
+              )
+              .join("")}
+          </div>
+        `;
+      } else if (node.kind === "result") {
+        const testsMarkup = (node.tests || [])
+          .map(
+            (t) => `
+            <div class="result-item">
+              <div class="result-name-row">
+                <div>${t.name}</div>
+                <div class="result-rank-pill">Rank ${t.rank}</div>
+              </div>
+              <div class="result-desc">${t.desc}</div>
+            </div>
+          `
+          )
+          .join("");
+
+        fragment.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">
+              ${node.title}
+            </div>
+            <span class="card-tag">${node.tag || "Result"}</span>
+          </div>
+          <div class="question-meta">
+            <span>These tests are ranked from most to less standard for this situation.</span>
+          </div>
+          <div class="question-body">
+            <div class="question-text">${node.text}</div>
+            ${
+              node.help
+                ? `<div class="question-help">${node.help}</div>`
+                : ""
+            }
+          </div>
+          <div class="results-list">
+            ${testsMarkup}
+          </div>
+        `;
+      }
+
+      // Replace content with new node
+      questionContainer.innerHTML = "";
+      questionContainer.appendChild(fragment);
+
+      // Attach handlers for options
+      if (node.kind === "question") {
+        const buttons = questionContainer.querySelectorAll(".option-btn");
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const next = btn.getAttribute("data-next");
+            const label = btn.getAttribute("data-label");
+            if (!next) return;
+
+            // Push to history
+            history.push({
+              nodeId: node.id,
+              label,
+            });
+
+            updatePathUI();
+            renderNode(next);
+          });
+        });
+      } else {
+        // For result nodes, update result sidebar
+        updateResultsSidebar(node);
+      }
+
+      updateHeaderForNode(node);
+      updateNavButtons();
+      updateMainSummary();
+    }
+
+    function updatePathUI() {
+      pathList.innerHTML = "";
+      if (history.length === 0) {
+        pathSummary.textContent =
+          "You are at the start of the checklist. Answer the first question to begin.";
+        return;
+      }
+
+      history.forEach((step, idx) => {
+        const li = document.createElement("li");
+        li.textContent = `Step ${idx + 1}: ${step.label}`;
+        pathList.appendChild(li);
+      });
+
+      const last = history[history.length - 1];
+      pathSummary.textContent = `Last choice: ${last.label}`;
+    }
+
+    function updateMainSummary() {
+      if (history.length === 0) {
+        pathSummary.textContent =
+          "You are at the start of the checklist. Answer the first question to begin.";
+      } else {
+        const last = history[history.length - 1];
+        pathSummary.textContent = `Last choice: ${last.label}`;
+      }
+    }
+
+    function updateResultsSidebar(node) {
+      if (node.kind !== "result") {
+        resultsTitle.textContent = "Answer questions to see suggestions";
+        resultsList.innerHTML = "";
+        return;
+      }
+
+      resultsTitle.textContent = node.title;
+
+      const markup = (node.tests || [])
+        .map(
+          (t) => `
+          <div class="result-item">
+            <div class="result-name-row">
+              <div>${t.name}</div>
+              <span class="result-chip">Rank ${t.rank}</span>
+            </div>
+            <div class="result-desc">${t.desc}</div>
+          </div>
+        `
+        )
+        .join("");
+
+      resultsList.innerHTML = markup;
+    }
+
+    function updateNavButtons() {
+      backBtn.disabled = history.length === 0;
+      backBtn.style.opacity = history.length === 0 ? 0.65 : 1;
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (history.length === 0) return;
+      history.pop();
+      const targetId = history.length === 0 ? "start" : history[history.length - 1].nodeId;
+      // When going back, we want to show the question/result at that node again.
+      renderNode(targetId, true);
+      updatePathUI();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      history.splice(0, history.length);
+      resultsList.innerHTML = "";
+      resultsTitle.textContent = "Answer questions to see suggestions";
+      renderNode("start", true);
+      updatePathUI();
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Initial render
+    renderNode("start", true);
+    updatePathUI();
+  </script>
+</body>
+</html>
